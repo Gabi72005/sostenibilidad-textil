@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario de Sostenibilidad Textil</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f0f8f4;
+      color: #2e4d38;
+      margin: 0;
+      padding: 2em;
+    }
+    h1 {
+      color: #2e7d32;
+    }
+    .question {
+      margin-bottom: 1.5em;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5em;
+    }
+    button {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 0.75em 1.5em;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .result {
+      margin-top: 2em;
+      padding: 1em;
+      border: 1px solid #c8e6c9;
+      background-color: #e8f5e9;
+      border-radius: 8px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init("RC-wKZ1Pp1oCcTYCq");
+    })();
+
+    function calcularPerfil(respuestas) {
+      const letras = respuestas.map(r => r.value);
+      const media = letras.reduce((sum, letra) => sum + (letra.charCodeAt(0) - 65), 0) / letras.length;
+      return String.fromCharCode(Math.round(media) + 65);
+    }
+
+    function enviarCorreo(perfil, consejos, email) {
+      const templateParams = {
+        to_email: email,
+        perfil: perfil,
+        consejos: consejos
+      };
+
+      emailjs.send("template_sostenibilidad", "template_pi8jv2o", templateParams)
+        .then(() => alert("Correo enviado con éxito."), () => alert("Error al enviar el correo."));
+    }
+
+    function mostrarResultado(event) {
+      event.preventDefault();
+      const form = document.getElementById("formulario");
+      const respuestas = [...form.querySelectorAll("input[type=radio]:checked")];
+      const email = form.email.value;
+
+      if (respuestas.length < 6 || !email) {
+        alert("Completa todas las preguntas e introduce tu email.");
+        return;
+      }
+
+      const perfil = calcularPerfil(respuestas);
+      const consejos = {
+        A: "¡Enhorabuena! Sigue así y anima a otros a imitar tu ejemplo.",
+        B: "Muy bien. Puedes mejorar fijándote más en etiquetas y apoyando producción local.",
+        C: "Estás en el camino. Intenta reutilizar más y explorar la segunda mano.",
+        D: "Reflexiona sobre tu consumo y prueba a reparar ropa o comprar menos.",
+        E: "Hora de cambiar. El planeta y las personas que producen tu ropa te lo agradecerán."
+      }[perfil];
+
+      document.getElementById("resultado").innerHTML =
+        `<div class='result'><strong>Tu perfil es ${perfil}</strong><br>${consejos}</div>`;
+
+      enviarCorreo(perfil, consejos, email);
+    }
+  </script>
+</head>
+<body>
+  <h1>¿Qué tan sostenible es tu armario?</h1>
+  <form id="formulario" onsubmit="mostrarResultado(event)">
+    <div class="question">
+      <label>1. ¿Cuántas prendas nuevas compras al año?</label>
+      <label><input type="radio" name="q1" value="A"> 0–6</label>
+      <label><input type="radio" name="q1" value="B"> 7–12</label>
+      <label><input type="radio" name="q1" value="C"> 13–24</label>
+      <label><input type="radio" name="q1" value="D"> 25–50</label>
+      <label><input type="radio" name="q1" value="E"> Más de 50</label>
+    </div>
+
+    <div class="question">
+      <label>2. ¿Cuántas veces usas una prenda antes de dejar de usarla?</label>
+      <label><input type="radio" name="q2" value="A"> 50 o más</label>
+      <label><input type="radio" name="q2" value="B"> 30–49</label>
+      <label><input type="radio" name="q2" value="C"> 15–29</label>
+      <label><input type="radio" name="q2" value="D"> 5–14</label>
+      <label><input type="radio" name="q2" value="E"> Menos de 5</label>
+    </div>
+
+    <div class="question">
+      <label>3. ¿Qué porcentaje de tu ropa es de segunda mano o revendida?</label>
+      <label><input type="radio" name="q3" value="A"> Más del 80%</label>
+      <label><input type="radio" name="q3" value="B"> 60–79%</label>
+      <label><input type="radio" name="q3" value="C"> 40–59%</label>
+      <label><input type="radio" name="q3" value="D"> 20–39%</label>
+      <label><input type="radio" name="q3" value="E"> Menos del 20%</label>
+    </div>
+
+    <div class="question">
+      <label>4. ¿Qué porcentaje de tus prendas están hechas con materiales sostenibles?</label>
+      <label><input type="radio" name="q4" value="A"> Más del 90%</label>
+      <label><input type="radio" name="q4" value="B"> 70–89%</label>
+      <label><input type="radio" name="q4" value="C"> 50–69%</label>
+      <label><input type="radio" name="q4" value="D"> 30–49%</label>
+      <label><input type="radio" name="q4" value="E"> Menos del 30%</label>
+    </div>
+
+    <div class="question">
+      <label>5. ¿Dónde se produce la mayoría de tu ropa?</label>
+      <label><input type="radio" name="q5" value="A"> Mayoritariamente local</label>
+      <label><input type="radio" name="q5" value="B"> En el país o zona cercana</label>
+      <label><input type="radio" name="q5" value="C"> Mitad local, mitad importada</label>
+      <label><input type="radio" name="q5" value="D"> Principalmente importada</label>
+      <label><input type="radio" name="q5" value="E"> No lo sé / no me importa</label>
+    </div>
+
+    <div class="question">
+      <label>6. ¿Qué importancia das a las condiciones laborales en la producción de tu ropa?</label>
+      <label><input type="radio" name="q6" value="A"> Siempre me aseguro</label>
+      <label><input type="radio" name="q6" value="B"> Suelo tenerlo en cuenta</label>
+      <label><input type="radio" name="q6" value="C"> A veces me fijo</label>
+      <label><input type="radio" name="q6" value="D"> Rara vez lo pienso</label>
+      <label><input type="radio" name="q6" value="E"> No me importa</label>
+    </div>
+
+    <div class="question">
+      <label>Introduce tu correo para recibir el resultado:</label>
+      <input type="email" name="email" required style="width: 100%; padding: 0.5em;">
+    </div>
+
+    <button type="submit">Ver resultado y recibir correo</button>
+  </form>
+
+  <div id="resultado"></div>
+</body>
+</html>
